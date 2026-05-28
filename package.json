@@ -1,0 +1,14 @@
+{
+  "name": "markdown-wiki",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "dev:3020": "concurrently \"PORT=3020 npm run server\" \"API_TARGET=http://localhost:3020 npm run client\"",
+    "server": "npm --prefix server run dev",
+    "client": "npm --prefix client run dev",
+    "install:all": "npm install && cd client && npm install && cd ../server && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

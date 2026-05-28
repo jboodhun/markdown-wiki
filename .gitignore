@@ -1,0 +1,5 @@
+_docs
+node_modules
+server/db/content.sqlite
+content/.obsidian
+client/dist
