@@ -11,10 +11,12 @@ permissions:
 
 jobs:
   release:
+    name: Release Please
     runs-on: ubuntu-latest
 
     steps:
-      - uses: googleapis/release-please-action@v4
+      - name: Create release PR or GitHub release
+        uses: googleapis/release-please-action@v4
         with:
           config-file: .release-please-config.json
           manifest-file: .release-please-manifest.json

@@ -9,11 +9,4 @@ const dbPath = process.env.DATABASE_PATH
 
 export const db = new Database(dbPath);
 
-export function initDb() {
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS app_metadata (
-      key TEXT PRIMARY KEY,
-      value TEXT
-    );
-  `);
-}
+export function initDb() {}

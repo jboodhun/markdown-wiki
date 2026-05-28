@@ -111,3 +111,27 @@ Build the frontend:
 ```bash
 npm --prefix client run build
 ```
+
+## Releases
+
+Releases are automated with GitHub Actions and Release Please.
+
+- `client` starts at `v0.1.0`
+- `server` starts at `v0.1.0`
+- Release PRs are opened automatically after changes land on `main`
+- Merging a release PR creates GitHub Releases and updates versions/changelogs
+- Version bumps follow semantic versioning from Conventional Commits
+
+Use commit messages like:
+
+```text
+fix(client): correct breadcrumb links
+feat(server): add content search endpoint
+feat(client)!: change content routing
+```
+
+Semantic versioning behavior:
+
+- `fix:` creates a patch release
+- `feat:` creates a minor release
+- `!` or `BREAKING CHANGE:` creates a major release
