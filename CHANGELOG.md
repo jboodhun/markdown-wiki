@@ -10,8 +10,6 @@ This project uses semantic versioning. Releases are automated with Release Pleas
 ### Features
 
 * add release automation ([f8e2938](https://github.com/jboodhun/markdown-wiki/commit/f8e2938ac671702db4fbeafae0ce90412a923d86))
-* add release automation ([8aed2d5](https://github.com/jboodhun/markdown-wiki/commit/8aed2d5537a81da7fbb789e0f1e0d05246c789bb))
-* manage repo as one project release ([c910515](https://github.com/jboodhun/markdown-wiki/commit/c9105157bda6ffa074ba6a3c46af4da7174e7bdb))
 * manage repo as one project release ([7518664](https://github.com/jboodhun/markdown-wiki/commit/7518664f45f5b22476db52d81021129b8df60883))
 
 
