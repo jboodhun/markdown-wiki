@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 This project uses semantic versioning. Releases are automated with Release Please from Conventional Commit messages.
 
+## [0.3.1](https://github.com/jboodhun/markdown-wiki/compare/markdown-wiki-v0.3.0...markdown-wiki-v0.3.1) (2026-05-28)
+
+
+### Bug Fixes
+
+* fix release changelog duplications ([1513b53](https://github.com/jboodhun/markdown-wiki/commit/1513b53248af008b798b159f99ee7086f5f6bae7))
+
 ## [0.3.0](https://github.com/jboodhun/markdown-wiki/compare/markdown-wiki-v0.2.1...markdown-wiki-v0.3.0) (2026-05-28)
 
 
