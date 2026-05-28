@@ -1,18 +1,8 @@
 {
-  "include-component-in-tag": true,
-  "separate-pull-requests": false,
-  "pull-request-title-pattern": "chore: release ${component} ${version}",
   "packages": {
-    "client": {
+    ".": {
       "release-type": "node",
-      "package-name": "markdown-wiki-client",
-      "component": "client",
-      "changelog-path": "CHANGELOG.md"
-    },
-    "server": {
-      "release-type": "node",
-      "package-name": "markdown-wiki-server",
-      "component": "server",
+      "package-name": "markdown-wiki",
       "changelog-path": "CHANGELOG.md"
     }
   }

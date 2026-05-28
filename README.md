@@ -116,8 +116,8 @@ npm --prefix client run build
 
 Releases are automated with GitHub Actions and Release Please.
 
-- `client` starts at `v0.1.0`
-- `server` starts at `v0.1.0`
+- The project is released as a single package
+- The current release baseline is `v0.2.1`
 - Release PRs are opened automatically after changes land on `main`
 - Merging a release PR creates GitHub Releases and updates versions/changelogs
 - Version bumps follow semantic versioning from Conventional Commits
@@ -125,9 +125,9 @@ Releases are automated with GitHub Actions and Release Please.
 Use commit messages like:
 
 ```text
-fix(client): correct breadcrumb links
-feat(server): add content search endpoint
-feat(client)!: change content routing
+fix: correct breadcrumb links
+feat: add content search endpoint
+feat!: change content routing
 ```
 
 Semantic versioning behavior:
