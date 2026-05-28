@@ -36,12 +36,12 @@ export function Sidebar() {
 
 function ContentTree({ tree, location, onNavigate }) {
   const [expanded, setExpanded] = useState(() => new Set());
-  const selectedPath = useMemo(() => decodeURIComponent(location.pathname.replace(/^\/content\/?/, '').replace(/^wiki\/.*/, '')), [location.pathname]);
+  const selectedPath = useMemo(() => decodeURIComponent(location.pathname.replace(/^\/+/, '').replace(/^wiki\/.*/, '')), [location.pathname]);
   const rootActive = location.pathname === '/';
 
   useEffect(() => {
     if (!selectedPath) return;
-    const folders = selectedPath.split('/').slice(0, -1).map((_, index, parts) => parts.slice(0, index + 1).join('/'));
+    const folders = selectedPath.split('/').map((_, index, parts) => parts.slice(0, index + 1).join('/'));
     setExpanded((current) => new Set([...current, ...folders.filter(Boolean)]));
   }, [selectedPath]);
 
@@ -51,7 +51,7 @@ function ContentTree({ tree, location, onNavigate }) {
       next.has(path) ? next.delete(path) : next.add(path);
       return next;
     });
-    onNavigate(path ? `/content/${path}` : '/');
+    onNavigate(path ? `/${path}` : '/');
   };
 
   return (
@@ -71,7 +71,7 @@ function ContentTree({ tree, location, onNavigate }) {
             expanded={expanded}
             selectedPath={selectedPath}
             onToggleFolder={toggleFolder}
-            onOpenFile={(path) => onNavigate(`/content/${path}`)}
+            onOpenFile={(path) => onNavigate(`/${path}`)}
           />
         ))}
       </div>
@@ -81,8 +81,9 @@ function ContentTree({ tree, location, onNavigate }) {
 
 function ContentTreeNode({ node, expanded, selectedPath, onToggleFolder, onOpenFile, depth = 0 }) {
   const isFolder = node.type === 'folder';
-  const isExpanded = expanded.has(node.path);
-  const isActive = selectedPath === node.path;
+  const nodePath = node.slugPath || slugPath(node.path);
+  const isExpanded = expanded.has(nodePath);
+  const isActive = selectedPath === nodePath;
   const indent = { paddingLeft: `${8 + depth * 14}px` };
 
   if (!isFolder) {
@@ -90,7 +91,7 @@ function ContentTreeNode({ node, expanded, selectedPath, onToggleFolder, onOpenF
       <button
         className={`flex w-full min-w-0 items-center gap-2 rounded-md py-1.5 pr-2 text-left text-sm transition ${isActive ? 'bg-[#edf4ff] text-[#1f5eff]' : 'text-[#475467] hover:bg-[#f2f5f9]'}`}
         style={indent}
-        onClick={() => onOpenFile(node.path)}
+        onClick={() => onOpenFile(nodePath)}
       >
         <FileText size={14} className="shrink-0 text-muted" />
         <span className="truncate">{node.name}</span>
@@ -103,7 +104,7 @@ function ContentTreeNode({ node, expanded, selectedPath, onToggleFolder, onOpenF
       <button
         className={`flex w-full min-w-0 items-center gap-1 rounded-md py-1.5 pr-2 text-left text-sm transition ${isActive ? 'bg-[#edf4ff] text-[#1f5eff]' : 'text-[#475467] hover:bg-[#f2f5f9]'}`}
         style={indent}
-        onClick={() => onToggleFolder(node.path)}
+        onClick={() => onToggleFolder(nodePath)}
       >
         {isExpanded ? <ChevronDown size={14} className="shrink-0" /> : <ChevronRight size={14} className="shrink-0" />}
         <Folder size={14} className="shrink-0" />
@@ -126,4 +127,12 @@ function ContentTreeNode({ node, expanded, selectedPath, onToggleFolder, onOpenF
       )}
     </div>
   );
+}
+
+function slugPath(path) {
+  return String(path || '').split('/').map(slugify).filter(Boolean).join('/');
+}
+
+function slugify(value) {
+  return String(value || '').trim().toLowerCase().replace(/\.md$/i, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }

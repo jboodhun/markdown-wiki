@@ -16,8 +16,8 @@ createRoot(document.getElementById('root')).render(
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<ContentBrowser />} />
-            <Route path="/content/wiki/:target" element={<ContentBrowser />} />
-            <Route path="/content/*" element={<ContentBrowser />} />
+            <Route path="/wiki/:target" element={<ContentBrowser />} />
+            <Route path="/*" element={<ContentBrowser />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>

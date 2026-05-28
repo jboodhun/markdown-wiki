@@ -45,7 +45,7 @@ function FolderView({ item }) {
           {[...folders, ...files].map((child) => (
             <Link
               key={child.path}
-              to={`/content/${child.path}`}
+              to={contentUrl(child)}
               className="flex min-w-0 items-center gap-3 rounded-md border border-border bg-white px-3 py-3 text-sm transition hover:border-[#9bb7ff] hover:shadow-sm"
             >
               {child.type === 'folder' ? <Folder size={17} className="shrink-0 text-[#667085]" /> : <FileText size={17} className="shrink-0 text-[#667085]" />}
@@ -63,7 +63,7 @@ function FileView({ item }) {
     <article className="space-y-5">
       <div>
         <Breadcrumb path={item.path} />
-        <h1 className="mt-1 text-3xl font-semibold">{item.name}</h1>
+        <h1 className="mt-6 text-3xl font-semibold">{item.name}</h1>
       </div>
       <div className="prose answer-content max-w-none" dangerouslySetInnerHTML={{ __html: item.html }} />
     </article>
@@ -76,7 +76,7 @@ function Breadcrumb({ path }) {
     { label: 'Content', to: '/' },
     ...parts.map((part, index) => ({
       label: titleFromSegment(part),
-      to: `/content/${parts.slice(0, index + 1).join('/')}`
+      to: `/${parts.slice(0, index + 1).map(slugify).join('/')}`
     }))
   ];
 
@@ -100,4 +100,16 @@ function titleFromPath(path) {
 
 function titleFromSegment(segment) {
   return String(segment || '').split(/[-_ ]+/).filter(Boolean).map((part) => part[0]?.toUpperCase() + part.slice(1)).join(' ');
+}
+
+function contentUrl(item) {
+  return `/${item.slugPath || slugPath(item.path)}`;
+}
+
+function slugPath(path) {
+  return String(path || '').split('/').map(slugify).filter(Boolean).join('/');
+}
+
+function slugify(value) {
+  return String(value || '').trim().toLowerCase().replace(/\.md$/i, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }

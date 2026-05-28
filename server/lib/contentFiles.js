@@ -88,7 +88,7 @@ const wikiLinkExtension = {
     return { type: 'wikilink', raw: match[0], target, label };
   },
   renderer(token) {
-    return `<a href="/content/wiki/${encodeURIComponent(token.target)}">${marked.parseInline(token.label)}</a>`;
+    return `<a href="/wiki/${encodeURIComponent(slugPath(token.target))}">${marked.parseInline(token.label)}</a>`;
   }
 };
 
@@ -110,7 +110,8 @@ export function listContent(pathValue = '') {
     const node = buildTree(target, normalizePath(pathValue));
     return {
       type: 'folder',
-      path: normalizePath(pathValue),
+      path: node.path,
+      slugPath: node.slugPath,
       name: node.name,
       children: node.children
     };
@@ -140,7 +141,7 @@ export function findContentByWikiTarget(target) {
 
 function buildTree(dir, relativeDir) {
   const name = relativeDir ? path.basename(relativeDir) : 'content';
-  const node = { type: 'folder', name: titleFromName(name), path: relativeDir, children: [] };
+  const node = { type: 'folder', name: titleFromName(name), path: relativeDir, slugPath: slugPath(relativeDir), children: [] };
   if (!fs.existsSync(dir)) return node;
 
   fs.readdirSync(dir, { withFileTypes: true })
@@ -154,7 +155,8 @@ function buildTree(dir, relativeDir) {
         node.children.push({
           type: 'file',
           name: titleFromFile(full),
-          path: stripMarkdownExtension(relative)
+          path: stripMarkdownExtension(relative),
+          slugPath: slugPath(stripMarkdownExtension(relative))
         });
       }
     });
@@ -171,6 +173,7 @@ function readContentFile(file) {
   return {
     type: 'file',
     path: stripMarkdownExtension(relative),
+    slugPath: slugPath(stripMarkdownExtension(relative)),
     filePath: relative,
     name: String(parsed.data.title || titleFromFile(file)).trim(),
     frontmatter: parsed.data,
@@ -182,12 +185,26 @@ function readContentFile(file) {
 function resolveContentPath(pathValue) {
   ensureContentRoot();
   const clean = normalizePath(pathValue);
-  const resolved = path.resolve(contentRoot, clean);
+  const resolvedPath = findContentPath(clean) || clean;
+  const resolved = path.resolve(contentRoot, resolvedPath);
   if (!resolved.startsWith(contentRoot)) throw new Error('Invalid content path');
   if (fs.existsSync(resolved)) return resolved;
   const markdownPath = `${resolved}.md`;
   if (fs.existsSync(markdownPath)) return markdownPath;
   return resolved;
+}
+
+function findContentPath(value) {
+  if (!value) return '';
+  const target = slugPath(value);
+  const candidates = walk(contentRoot)
+    .concat(walkDirectories(contentRoot))
+    .map((item) => relativeContentPath(item));
+  const match = candidates.find((candidate) => {
+    const pathValue = stripMarkdownExtension(candidate);
+    return pathValue === value || slugPath(pathValue) === target;
+  });
+  return match ? stripMarkdownExtension(match) : null;
 }
 
 function ensureContentRoot() {
@@ -201,6 +218,16 @@ function walk(dir) {
     .flatMap((entry) => {
       const full = path.join(dir, entry.name);
       return entry.isDirectory() ? walk(full) : [full];
+    });
+}
+
+function walkDirectories(dir) {
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir, { withFileTypes: true })
+    .filter((entry) => !ignoredNames.has(entry.name) && !entry.name.startsWith('.'))
+    .flatMap((entry) => {
+      const full = path.join(dir, entry.name);
+      return entry.isDirectory() ? [full, ...walkDirectories(full)] : [];
     });
 }
 
@@ -240,10 +267,14 @@ function slugify(value) {
   return String(value || '').trim().toLowerCase().replace(/\.md$/i, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
+function slugPath(value) {
+  return normalizePath(value).split('/').map(slugify).filter(Boolean).join('/');
+}
+
 function normalizeHref(value) {
   const href = String(value || '');
   if (isExternalLink(href) || href.startsWith('#') || href.startsWith('/')) return href;
-  if (href.toLowerCase().endsWith('.md')) return `/content/${stripMarkdownExtension(href)}`;
+  if (href.toLowerCase().endsWith('.md')) return `/${slugPath(stripMarkdownExtension(href))}`;
   return href;
 }
 
