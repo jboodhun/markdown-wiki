@@ -35,8 +35,8 @@ function FolderView({ item }) {
   return (
     <div className="space-y-5">
       <div>
-        <Breadcrumb path={item.path} />
-        <h1 className="mt-1 text-3xl font-semibold">{item.path ? titleFromPath(item.path) : 'Content'}</h1>
+        <Breadcrumb path={item.path} rootName={item.rootName} />
+        <h1 className="mt-1 text-3xl font-semibold">{item.path ? titleFromPath(item.path) : item.name}</h1>
       </div>
       {item.children.length === 0 ? (
         <p className="text-sm text-muted">No Markdown files found in this folder.</p>
@@ -62,7 +62,7 @@ function FileView({ item }) {
   return (
     <article className="space-y-5">
       <div>
-        <Breadcrumb path={item.path} />
+        <Breadcrumb path={item.path} rootName={item.rootName} />
         <h1 className="mt-6 text-3xl font-semibold">{item.name}</h1>
       </div>
       <div className="prose answer-content max-w-none" dangerouslySetInnerHTML={{ __html: item.html }} />
@@ -70,10 +70,10 @@ function FileView({ item }) {
   );
 }
 
-function Breadcrumb({ path }) {
+function Breadcrumb({ path, rootName = 'Content' }) {
   const parts = String(path || '').split('/').filter(Boolean);
   const crumbs = [
-    { label: 'Content', to: '/' },
+    { label: rootName, to: '/' },
     ...parts.map((part, index) => ({
       label: titleFromSegment(part),
       to: `/${parts.slice(0, index + 1).map(slugify).join('/')}`

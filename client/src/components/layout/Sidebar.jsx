@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { BookOpen, ChevronDown, ChevronRight, FileText, Folder, Menu } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
-import { getContentTree } from '../../api/content';
+import { getContentRoot, getContentTree } from '../../api/content';
 import { Button } from '../ui/primitives';
 
 export function Sidebar() {
@@ -14,6 +14,10 @@ export function Sidebar() {
     queryFn: getContentTree,
     refetchInterval: 1000,
     refetchIntervalInBackground: true
+  });
+  const { data: root = { name: 'Content' } } = useQuery({
+    queryKey: ['content', 'root'],
+    queryFn: getContentRoot
   });
 
   const go = (path) => navigate(path);
@@ -28,13 +32,13 @@ export function Sidebar() {
             {!collapsed && <strong className="truncate text-base">Markdown Wiki</strong>}
           </Link>
         </div>
-        {!collapsed && <ContentTree tree={tree} location={location} onNavigate={go} />}
+        {!collapsed && <ContentTree tree={tree} rootName={root.name} location={location} onNavigate={go} />}
       </div>
     </aside>
   );
 }
 
-function ContentTree({ tree, location, onNavigate }) {
+function ContentTree({ tree, rootName, location, onNavigate }) {
   const [expanded, setExpanded] = useState(() => new Set());
   const selectedPath = useMemo(() => decodeURIComponent(location.pathname.replace(/^\/+/, '').replace(/^wiki\/.*/, '')), [location.pathname]);
   const rootActive = location.pathname === '/';
@@ -61,7 +65,7 @@ function ContentTree({ tree, location, onNavigate }) {
         onClick={() => onNavigate('/')}
       >
         <Folder size={15} />
-        Content
+        <span className="truncate">{rootName}</span>
       </button>
       <div className="space-y-1">
         {tree.map((node) => (

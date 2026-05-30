@@ -1,12 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import matter from 'gray-matter';
 import hljs from 'highlight.js';
 import { marked } from 'marked';
-
-const serverDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-export const contentRoot = path.resolve(serverDir, '../content');
+import { contentRoot, contentRootName } from './contentConfig.js';
 
 const ignoredNames = new Set(['.DS_Store', '.obsidian', 'media']);
 
@@ -101,6 +98,14 @@ export function getContentTree() {
   return root.children;
 }
 
+export function getContentRootInfo() {
+  return {
+    name: titleFromName(contentRootName),
+    path: '',
+    slugPath: ''
+  };
+}
+
 export function listContent(pathValue = '') {
   const target = resolveContentPath(pathValue);
   if (!fs.existsSync(target)) return null;
@@ -113,6 +118,7 @@ export function listContent(pathValue = '') {
       path: node.path,
       slugPath: node.slugPath,
       name: node.name,
+      rootName: titleFromName(contentRootName),
       children: node.children
     };
   }
@@ -140,7 +146,7 @@ export function findContentByWikiTarget(target) {
 }
 
 function buildTree(dir, relativeDir) {
-  const name = relativeDir ? path.basename(relativeDir) : 'content';
+  const name = relativeDir ? path.basename(relativeDir) : contentRootName;
   const node = { type: 'folder', name: titleFromName(name), path: relativeDir, slugPath: slugPath(relativeDir), children: [] };
   if (!fs.existsSync(dir)) return node;
 
@@ -176,6 +182,7 @@ function readContentFile(file) {
     slugPath: slugPath(stripMarkdownExtension(relative)),
     filePath: relative,
     name: String(parsed.data.title || titleFromFile(file)).trim(),
+    rootName: titleFromName(contentRootName),
     frontmatter: parsed.data,
     markdown,
     html: marked.parse(markdown)
@@ -187,7 +194,7 @@ function resolveContentPath(pathValue) {
   const clean = normalizePath(pathValue);
   const resolvedPath = findContentPath(clean) || clean;
   const resolved = path.resolve(contentRoot, resolvedPath);
-  if (!resolved.startsWith(contentRoot)) throw new Error('Invalid content path');
+  if (!isInsideContentRoot(resolved)) throw new Error('Invalid content path');
   if (fs.existsSync(resolved)) return resolved;
   const markdownPath = `${resolved}.md`;
   if (fs.existsSync(markdownPath)) return markdownPath;
@@ -209,6 +216,11 @@ function findContentPath(value) {
 
 function ensureContentRoot() {
   fs.mkdirSync(contentRoot, { recursive: true });
+}
+
+function isInsideContentRoot(value) {
+  const relative = path.relative(contentRoot, value);
+  return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative));
 }
 
 function walk(dir) {

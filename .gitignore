@@ -1,5 +1,8 @@
 _docs
 node_modules
 server/db/content.sqlite
-content/.obsidian
+content/
 client/dist
+.env
+.env.local
+content
