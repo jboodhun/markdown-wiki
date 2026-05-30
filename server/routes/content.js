@@ -1,10 +1,14 @@
 import express from 'express';
-import { findContentByWikiTarget, getContentTree, listContent } from '../lib/contentFiles.js';
+import { findContentByWikiTarget, getContentRootInfo, getContentTree, listContent } from '../lib/contentFiles.js';
 
 const router = express.Router();
 
 router.get('/tree', (req, res) => {
   res.json(getContentTree());
+});
+
+router.get('/root', (req, res) => {
+  res.json(getContentRootInfo());
 });
 
 router.get('/wiki/:target', (req, res) => {
