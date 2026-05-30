@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 This project uses semantic versioning. Releases are automated with Release Please from Conventional Commit messages.
 
+## [0.4.0](https://github.com/jboodhun/markdown-wiki/compare/markdown-wiki-v0.3.1...markdown-wiki-v0.4.0) (2026-05-30)
+
+
+### Features
+
+* make content folder configurable ([#8](https://github.com/jboodhun/markdown-wiki/issues/8)) ([4cdc336](https://github.com/jboodhun/markdown-wiki/commit/4cdc336000d9cf17ed25f0a3e5832a77be852586))
+
 ## [0.3.1](https://github.com/jboodhun/markdown-wiki/compare/markdown-wiki-v0.3.0...markdown-wiki-v0.3.1) (2026-05-28)
 
 
